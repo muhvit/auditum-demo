@@ -1,0 +1,22 @@
+flowchart LR
+  USER["Developer or tester"] --> CLI["kubectl / curl / PowerShell scripts"]
+  CLI --> ACCESS["NodePort or kubectl port-forward"]
+  ACCESS --> SVC["Kubernetes Service: auditum"]
+  SVC --> AUD["Auditum Pod"]
+  AUD --> SQLITE["SQLite PVC in dev"]
+  AUD --> PG["PostgreSQL Pod in local-test"]
+  TG["Terragrunt target env"] --> TF["Terraform + Kubernetes provider"]
+  TF --> K8S["Namespace, config, service, storage, workloads"]
+
+  subgraph DEV["dev target"]
+    K3D["k3d cluster"]
+    SQLITE
+  end
+
+  subgraph LOCALTEST["local-test target"]
+    MK8S["microk8s cluster"]
+    PG
+  end
+
+  K8S --> K3D
+  K8S --> MK8S
